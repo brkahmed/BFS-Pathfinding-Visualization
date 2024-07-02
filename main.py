@@ -64,6 +64,7 @@ class Game:
         for i in range(max(0, cell.y -1), min(cell.y + 2, self.map.shape[0]), 2):
             if self.map[i, cell.x] < START:
                 neighboors.append(Cell(PATH, PATH_COLOR, cell.x, i))
+        return neighboors
 
 class Cell:
     def __init__(self, value: int, color: str, x: int, y: int) -> None:
@@ -71,6 +72,9 @@ class Cell:
         self.color = color
         self.x = x 
         self.y = y
+
+    def __repr__(self) -> str:
+        return f'Cell(value({self.value}), courdinate({self.x}, {self.y}))'
 
     def __eq__(self, other: 'Cell') -> bool:
         return self.x == other.x and self.y == other.y
