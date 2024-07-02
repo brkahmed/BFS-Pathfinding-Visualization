@@ -59,6 +59,7 @@ class Game:
             pygame.draw.line(self.screen, 'white', (i, 0), (i, SCREEN_SIZE), 2)
 
     def get_short_path(self):
+        # BFS algorithm
         to_search: deque[tuple] = deque()
         searched: set[Cell] = set()
         short_path: list[Cell] = []
@@ -73,19 +74,18 @@ class Game:
             to_search.extend((n, path + [n]) for n in self.get_neighboors(cell))
             searched.add(cell)
 
-        print(len(short_path))
         for cell in short_path:
             cell.add_to_map(self.map)
 
     def get_neighboors(self, cell: 'Cell') -> list['Cell']:
         neighboors: list[Cell] = []
-        if cell.y > 0 and self.map[cell.y - 1, cell.x] < START:
+        if cell.y > 0 and self.map[cell.y - 1, cell.x] < START: # Top
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x, cell.y - 1))
-        if cell.y + 1 < CELLS and self.map[cell.y + 1, cell.x] < START:
+        if cell.y + 1 < CELLS and self.map[cell.y + 1, cell.x] < START: # Bottm
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x, cell.y + 1))
-        if cell.x > 0 and self.map[cell.y, cell.x - 1] < START:
+        if cell.x > 0 and self.map[cell.y, cell.x - 1] < START: # Left
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x - 1, cell.y))
-        if cell.x + 1 < CELLS and self.map[cell.y, cell.x + 1] < START:
+        if cell.x + 1 < CELLS and self.map[cell.y, cell.x + 1] < START: # Right
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x + 1, cell.y))
         return neighboors
 
@@ -105,6 +105,9 @@ class Cell:
         return self.x == other.x and self.y == other.y
     
     def __hash__(self) -> int:
+        '''For checking with set
+        this will return the hash of
+        it courdinates tuple'''
         return hash((self.x, self.y))
     
     def add_to_map(self, map: np.ndarray, force: bool = False) -> None:
