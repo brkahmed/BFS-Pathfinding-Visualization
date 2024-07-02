@@ -20,7 +20,7 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
         pygame.display.set_caption('BFS')
         self.map = np.zeros((CELLS, CELLS), 'uint8')
-        self.start = Cell(START, START_COLOR, 0, 0)
+        self.start = Cell(START, START_COLOR, 5, 5)
 
     def run(self) -> None:
         while True:
