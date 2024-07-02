@@ -28,7 +28,8 @@ class Game:
                 break
             self.screen.fill('#222222')
             self.draw_map()
-            #print(self.get_neighboors(self.start))
+            for c in self.get_neighboors(self.start):
+                c.add_to_map(self.map)
             pygame.display.flip()
 
         pygame.quit()
@@ -55,7 +56,7 @@ class Game:
             #  Draw vertical lines
             pygame.draw.line(self.screen, 'white', (i, 0), (i, SCREEN_SIZE), 2)
 
-    def get_neighboors(self, cell: 'Cell') -> list:
+    def get_neighboors(self, cell: 'Cell') -> list['Cell']:
         neighboors: list[Cell] = []
         for i in range(max(0, cell.x -1), min(cell.x + 2, self.map.shape[1]), 2):
             if self.map[cell.y, i] < START:
