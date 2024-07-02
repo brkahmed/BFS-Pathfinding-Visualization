@@ -20,7 +20,7 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
         pygame.display.set_caption('BFS')
         self.map = np.zeros((CELLS, CELLS), 'uint8')
-        self.start = Cell(START, START_COLOR, 5, 5)
+        self.start = Cell(START, START_COLOR, 5, 5, self.map)
 
     def run(self) -> None:
         while True:
@@ -28,7 +28,7 @@ class Game:
                 break
             self.screen.fill('#222222')
             self.draw_map()
-            print(self.get_neighboors(self.start))
+            #print(self.get_neighboors(self.start))
             pygame.display.flip()
 
         pygame.quit()
@@ -37,13 +37,13 @@ class Game:
         # Draw cells in the map dependig on their value
         for i, row in enumerate(self.map):
             for j, cell in enumerate(row):
-                if cell == 0: # if cell is zero keep the background color
+                if cell == EMPTY: # if cell is zero keep the background color
                     continue
                 if cell == START:
                     color = START_COLOR
                 elif cell == TARGET:
                     color = TARGET_COLOR
-                elif cell == PATH:
+                else:
                     color = PATH_COLOR
                 pygame.draw.rect(self.screen,
                                  color,
@@ -67,11 +67,13 @@ class Game:
         return neighboors
 
 class Cell:
-    def __init__(self, value: int, color: str, x: int, y: int) -> None:
+    def __init__(self, value: int, color: str, x: int, y: int, map: np.ndarray = None) -> None:
         self.value = value
         self.color = color
         self.x = x 
         self.y = y
+        if map is not None:
+            self.add_to_map(map)
 
     def __repr__(self) -> str:
         return f'Cell(value({self.value}), courdinate({self.x}, {self.y}))'
