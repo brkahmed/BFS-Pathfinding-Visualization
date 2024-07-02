@@ -23,6 +23,7 @@ class Game:
         self.map = np.zeros((CELLS, CELLS), 'uint8')
         self.start = Cell(START, START_COLOR, 0, 0, self.map)
         self.target = Cell(TARGET, TARGET_COLOR, 9, 9, self.map)
+        self.map[5, 0:8] = [4] * 8
 
     def run(self) -> None:
         while True:
@@ -50,7 +51,7 @@ class Game:
                     color = PATH_COLOR
                 pygame.draw.rect(self.screen,
                                  color,
-                                 pygame.Rect(i*CELL_SIZE, j*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                                 pygame.Rect(j*CELL_SIZE, i*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 
         for i in range(CELL_SIZE, SCREEN_SIZE, CELL_SIZE): # Start from CELL SIZE to hide the two lines in top and left
             # Draw horizantal lines
