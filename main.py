@@ -73,7 +73,6 @@ class Game:
             to_search.extend((n, path + [n]) for n in self.get_neighboors(cell))
             searched.add(cell)
 
-        print(len(short_path))
         for cell in short_path:
             cell.add_to_map(self.map)
 
