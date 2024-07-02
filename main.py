@@ -6,11 +6,12 @@ CELLS = 10
 CELL_SIZE = 70
 SCREEN_SIZE = CELLS * CELL_SIZE
 
-START = 1
-START_COLOR = 'blue'
+EMPTY = 0
+PATH = 1
 TARGET = 2
+START = 3
 TARGET_COLOR = 'red'
-PATH = 3
+START_COLOR = 'blue'
 PATH_COLOR = 'green'
 
 class Game:
@@ -19,6 +20,7 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
         pygame.display.set_caption('BFS')
         self.map = np.zeros((CELLS, CELLS), 'uint8')
+        self.start = Cell(START, START_COLOR, 0, 0)
 
     def run(self) -> None:
         while True:
@@ -26,7 +28,7 @@ class Game:
                 break
             self.screen.fill('#222222')
             self.draw_map()
-
+            print(self.get_neighboors(self.start))
             pygame.display.flip()
 
         pygame.quit()
@@ -52,6 +54,29 @@ class Game:
             pygame.draw.line(self.screen, 'white', (0, i), (SCREEN_SIZE, i), 2)
             #  Draw vertical lines
             pygame.draw.line(self.screen, 'white', (i, 0), (i, SCREEN_SIZE), 2)
+
+    def get_neighboors(self, cell: 'Cell') -> list:
+        neighboors: list[Cell] = []
+        for i in range(max(0, cell.x -1), min(cell.x + 2, self.map.shape[1]), 2):
+            if self.map[cell.y, i] < START:
+                neighboors.append(Cell(PATH, PATH_COLOR, i, cell.y))
+
+        for i in range(max(0, cell.y -1), min(cell.y + 2, self.map.shape[0]), 2):
+            if self.map[i, cell.x] < START:
+                neighboors.append(Cell(PATH, PATH_COLOR, cell.x, i))
+
+class Cell:
+    def __init__(self, value: int, color: str, x: int, y: int) -> None:
+        self.value = value
+        self.color = color
+        self.x = x 
+        self.y = y
+
+    def __eq__(self, other: 'Cell') -> bool:
+        return self.x == other.x and self.y == other.y
+    
+    def add_to_map(self, map: np.ndarray) -> None:
+        map[self.y, self.x] = self.value
 
 if __name__ == '__main__':
     Game().run()
