@@ -20,7 +20,7 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
         pygame.display.set_caption('BFS')
         self.map = np.zeros((CELLS, CELLS), 'uint8')
-        self.start = Cell(START, START_COLOR, 5, 5, self.map)
+        self.start = Cell(START, START_COLOR, 0, 0, self.map)
 
     def run(self) -> None:
         while True:
@@ -28,8 +28,7 @@ class Game:
                 break
             self.screen.fill('#222222')
             self.draw_map()
-            for c in self.get_neighboors(self.start):
-                c.add_to_map(self.map)
+
             pygame.display.flip()
 
         pygame.quit()
@@ -58,13 +57,14 @@ class Game:
 
     def get_neighboors(self, cell: 'Cell') -> list['Cell']:
         neighboors: list[Cell] = []
-        for i in range(max(0, cell.x -1), min(cell.x + 2, self.map.shape[1]), 2):
-            if self.map[cell.y, i] < START:
-                neighboors.append(Cell(PATH, PATH_COLOR, i, cell.y))
-
-        for i in range(max(0, cell.y -1), min(cell.y + 2, self.map.shape[0]), 2):
-            if self.map[i, cell.x] < START:
-                neighboors.append(Cell(PATH, PATH_COLOR, cell.x, i))
+        if cell.y - 1 > 0 and self.map[cell.y - 1, cell.x] < START:
+            neighboors.append(Cell(PATH, PATH_COLOR, cell.x, cell.y - 1))
+        if cell.y + 1 < CELLS and self.map[cell.y + 1, cell.x] < START:
+            neighboors.append(Cell(PATH, PATH_COLOR, cell.x, cell.y + 1))
+        if cell.x - 1 > 0 and self.map[cell.y, cell.x - 1] < START:
+            neighboors.append(Cell(PATH, PATH_COLOR, cell.x - 1, cell.y))
+        if cell.x + 1 < CELLS and self.map[cell.y, cell.x + 1] < START:
+            neighboors.append(Cell(PATH, PATH_COLOR, cell.x + 1, cell.y))
         return neighboors
 
 class Cell:
@@ -83,7 +83,7 @@ class Cell:
         return self.x == other.x and self.y == other.y
     
     def add_to_map(self, map: np.ndarray) -> None:
-        map[self.y, self.x] = self.value
+        map[self.x, self.y] = self.value
 
 if __name__ == '__main__':
     Game().run()
