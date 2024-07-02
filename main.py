@@ -107,8 +107,9 @@ class Cell:
     def __hash__(self) -> int:
         return hash((self.x, self.y))
     
-    def add_to_map(self, map: np.ndarray) -> None:
-        map[self.x, self.y] = self.value
+    def add_to_map(self, map: np.ndarray, force: bool = False) -> None:
+        if force or map[self.x, self.y] == EMPTY:
+            map[self.x, self.y] = self.value
 
 if __name__ == '__main__':
     Game().run()
