@@ -24,7 +24,6 @@ class Game:
         self.map = np.zeros((CELLS, CELLS), int)
         self.start = Cell(START, START_COLOR, 0, 0, self.map)
         self.target = Cell(TARGET, TARGET_COLOR, 9, 9, self.map)
-        self.map[5, 0:8] = [4] * 8
 
         # testing
         self.map[0:8, 1] = [OBSTACLE] * 8
