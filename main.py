@@ -8,22 +8,27 @@ CELL_SIZE = 70
 SCREEN_SIZE = CELLS * CELL_SIZE
 
 EMPTY = 0
-PATH = 1
-TARGET = 2
-START = 3
+TARGET = 1
+START = 2
+PATH = 3
+OBSTACLE = 4
 TARGET_COLOR = 'red'
 START_COLOR = 'blue'
 PATH_COLOR = 'green'
-
+OBSTACLE_COLOR = 'brown'
 class Game:
     def __init__(self) -> None:
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
         pygame.display.set_caption('BFS')
-        self.map = np.zeros((CELLS, CELLS), 'uint8')
+        self.map = np.zeros((CELLS, CELLS), int)
         self.start = Cell(START, START_COLOR, 0, 0, self.map)
         self.target = Cell(TARGET, TARGET_COLOR, 9, 9, self.map)
         self.map[5, 0:8] = [4] * 8
+
+        # testing
+        self.map[0:8, 1] = [OBSTACLE] * 8
+
 
     def run(self) -> None:
         while True:
@@ -32,6 +37,8 @@ class Game:
             self.screen.fill('#222222')
             self.draw_map()
             self.get_short_path()
+            print(self.map)
+            pygame.time.delay(1000)
 
             pygame.display.flip()
 
@@ -47,8 +54,10 @@ class Game:
                     color = START_COLOR
                 elif cell == TARGET:
                     color = TARGET_COLOR
-                else:
+                elif cell == PATH:
                     color = PATH_COLOR
+                else:
+                    color = OBSTACLE_COLOR
                 pygame.draw.rect(self.screen,
                                  color,
                                  pygame.Rect(j*CELL_SIZE, i*CELL_SIZE, CELL_SIZE, CELL_SIZE))
@@ -60,6 +69,7 @@ class Game:
             pygame.draw.line(self.screen, 'white', (i, 0), (i, SCREEN_SIZE), 2)
 
     def get_short_path(self):
+        # BFS algorithm
         to_search: deque[tuple] = deque()
         searched: set[Cell] = set()
         short_path: list[Cell] = []
@@ -79,13 +89,13 @@ class Game:
 
     def get_neighboors(self, cell: 'Cell') -> list['Cell']:
         neighboors: list[Cell] = []
-        if cell.y > 0 and self.map[cell.y - 1, cell.x] < START:
+        if cell.y > 0 and self.map[cell.y - 1, cell.x] < START: # Top
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x, cell.y - 1))
-        if cell.y + 1 < CELLS and self.map[cell.y + 1, cell.x] < START:
+        if cell.y + 1 < CELLS and self.map[cell.y + 1, cell.x] < START: # Bottm
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x, cell.y + 1))
-        if cell.x > 0 and self.map[cell.y, cell.x - 1] < START:
+        if cell.x > 0 and self.map[cell.y, cell.x - 1] < START: # Left
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x - 1, cell.y))
-        if cell.x + 1 < CELLS and self.map[cell.y, cell.x + 1] < START:
+        if cell.x + 1 < CELLS and self.map[cell.y, cell.x + 1] < START: # Right
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x + 1, cell.y))
         return neighboors
 
@@ -105,10 +115,14 @@ class Cell:
         return self.x == other.x and self.y == other.y
     
     def __hash__(self) -> int:
+        '''For checking with set
+        this will return the hash of
+        it courdinates tuple'''
         return hash((self.x, self.y))
     
-    def add_to_map(self, map: np.ndarray) -> None:
-        map[self.x, self.y] = self.value
+    def add_to_map(self, map: np.ndarray, force: bool = False) -> None:
+        if force or map[self.x, self.y] == EMPTY:
+            map[self.x, self.y] = self.value
 
 if __name__ == '__main__':
     Game().run()
