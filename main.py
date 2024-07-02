@@ -1,4 +1,5 @@
 import numpy as np
+from collections import deque
 import pygame
 from pygame.locals import *
 
@@ -21,6 +22,7 @@ class Game:
         pygame.display.set_caption('BFS')
         self.map = np.zeros((CELLS, CELLS), 'uint8')
         self.start = Cell(START, START_COLOR, 0, 0, self.map)
+        self.target = Cell(TARGET, TARGET_COLOR, 9, 9, self.map)
 
     def run(self) -> None:
         while True:
@@ -28,6 +30,7 @@ class Game:
                 break
             self.screen.fill('#222222')
             self.draw_map()
+            self.get_short_path()
 
             pygame.display.flip()
 
@@ -55,13 +58,32 @@ class Game:
             #  Draw vertical lines
             pygame.draw.line(self.screen, 'white', (i, 0), (i, SCREEN_SIZE), 2)
 
+    def get_short_path(self):
+        to_search: deque[tuple] = deque()
+        searched: set[Cell] = set()
+        short_path: list[Cell] = []
+        to_search.append((self.start, []))
+        while to_search:
+            cell, path = to_search.popleft()
+            if cell in searched:
+                continue
+            if cell == self.target:
+                short_path = path
+                break
+            to_search.extend((n, path + [n]) for n in self.get_neighboors(cell))
+            searched.add(cell)
+
+        print(len(short_path))
+        for cell in short_path:
+            cell.add_to_map(self.map)
+
     def get_neighboors(self, cell: 'Cell') -> list['Cell']:
         neighboors: list[Cell] = []
-        if cell.y - 1 > 0 and self.map[cell.y - 1, cell.x] < START:
+        if cell.y > 0 and self.map[cell.y - 1, cell.x] < START:
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x, cell.y - 1))
         if cell.y + 1 < CELLS and self.map[cell.y + 1, cell.x] < START:
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x, cell.y + 1))
-        if cell.x - 1 > 0 and self.map[cell.y, cell.x - 1] < START:
+        if cell.x > 0 and self.map[cell.y, cell.x - 1] < START:
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x - 1, cell.y))
         if cell.x + 1 < CELLS and self.map[cell.y, cell.x + 1] < START:
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x + 1, cell.y))
@@ -81,6 +103,9 @@ class Cell:
 
     def __eq__(self, other: 'Cell') -> bool:
         return self.x == other.x and self.y == other.y
+    
+    def __hash__(self) -> int:
+        return hash((self.x, self.y))
     
     def add_to_map(self, map: np.ndarray) -> None:
         map[self.x, self.y] = self.value
