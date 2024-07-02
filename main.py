@@ -8,21 +8,26 @@ CELL_SIZE = 70
 SCREEN_SIZE = CELLS * CELL_SIZE
 
 EMPTY = 0
-PATH = 1
-TARGET = 2
-START = 3
+TARGET = 1
+START = 2
+PATH = 3
+OBSTACLE = 4
 TARGET_COLOR = 'red'
 START_COLOR = 'blue'
 PATH_COLOR = 'green'
-
+OBSTACLE_COLOR = 'brown'
 class Game:
     def __init__(self) -> None:
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
         pygame.display.set_caption('BFS')
-        self.map = np.zeros((CELLS, CELLS), 'uint8')
+        self.map = np.zeros((CELLS, CELLS), int)
         self.start = Cell(START, START_COLOR, 0, 0, self.map)
         self.target = Cell(TARGET, TARGET_COLOR, 9, 9, self.map)
+
+        # testing
+        self.map[0:8, 1] = [OBSTACLE] * 8
+
 
     def run(self) -> None:
         while True:
@@ -31,6 +36,8 @@ class Game:
             self.screen.fill('#222222')
             self.draw_map()
             self.get_short_path()
+            print(self.map)
+            pygame.time.delay(1000)
 
             pygame.display.flip()
 
@@ -46,11 +53,13 @@ class Game:
                     color = START_COLOR
                 elif cell == TARGET:
                     color = TARGET_COLOR
-                else:
+                elif cell == PATH:
                     color = PATH_COLOR
+                else:
+                    color = OBSTACLE_COLOR
                 pygame.draw.rect(self.screen,
                                  color,
-                                 pygame.Rect(i*CELL_SIZE, j*CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                                 pygame.Rect(j*CELL_SIZE, i*CELL_SIZE, CELL_SIZE, CELL_SIZE))
                 
         for i in range(CELL_SIZE, SCREEN_SIZE, CELL_SIZE): # Start from CELL SIZE to hide the two lines in top and left
             # Draw horizantal lines
