@@ -26,7 +26,7 @@ class Game:
         self.target = Cell(TARGET, TARGET_COLOR, 9, 9, self.map)
 
         # testing
-        self.map[0:8, 1] = [OBSTACLE] * 8
+        self.map[0:8, 5] = [OBSTACLE] * 8
 
 
     def run(self) -> None:
@@ -120,8 +120,8 @@ class Cell:
         return hash((self.x, self.y))
     
     def add_to_map(self, map: np.ndarray, force: bool = False) -> None:
-        if force or map[self.x, self.y] == EMPTY:
-            map[self.x, self.y] = self.value
+        if force or map[self.y, self.x] == EMPTY:
+            map[self.y, self.x] = self.value
 
 if __name__ == '__main__':
     Game().run()
