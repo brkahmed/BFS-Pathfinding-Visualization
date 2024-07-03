@@ -15,18 +15,15 @@ OBSTACLE = 4
 TARGET_COLOR = 'red'
 START_COLOR = 'blue'
 PATH_COLOR = 'green'
-OBSTACLE_COLOR = 'brown'
+OBSTACLE_COLOR = 'gray'
 class Game:
     def __init__(self) -> None:
         pygame.init()
         self.screen: pygame.Surface = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
         pygame.display.set_caption('BFS')
-        self.map: np.ndarray = np.zeros((CELLS, CELLS), int)
-        self.start: Cell = Cell(START, START_COLOR, 0, 0, self.map)
-        self.target: Cell = Cell(TARGET, TARGET_COLOR, 9, 9, self.map)
-
-        # testing
-        self.map[5, 0:8] = [OBSTACLE] * 8
+        self.map: np.ndarray = np.loadtxt('map.csv', 'uint8', delimiter=',')
+        self.start: Cell = Cell(START, START_COLOR, 1, 1, self.map)
+        self.target: Cell = Cell(TARGET, TARGET_COLOR, 8, 8, self.map)
 
     def run(self) -> None:
         while True:
@@ -121,7 +118,7 @@ class Cell:
         self.x: int = x 
         self.y: int = y
         if map is not None:
-            self.add_to_map(map)
+            self.add_to_map(map, force=True)
 
     def __repr__(self) -> str:
         return f'Cell(value({self.value}), courdinate({self.x}, {self.y}))'
