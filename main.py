@@ -19,31 +19,31 @@ OBSTACLE_COLOR = 'brown'
 class Game:
     def __init__(self) -> None:
         pygame.init()
-        self.screen = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
+        self.screen: pygame.Surface = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
         pygame.display.set_caption('BFS')
-        self.map = np.zeros((CELLS, CELLS), int)
-        self.start = Cell(START, START_COLOR, 0, 0, self.map)
-        self.target = Cell(TARGET, TARGET_COLOR, 9, 9, self.map)
+        self.map: np.ndarray = np.zeros((CELLS, CELLS), int)
+        self.start: Cell = Cell(START, START_COLOR, 0, 0, self.map)
+        self.target: Cell = Cell(TARGET, TARGET_COLOR, 9, 9, self.map)
 
         # testing
-        self.map[0:8, 5] = [OBSTACLE] * 8
-
+        self.map[5, 0:8] = [OBSTACLE] * 8
 
     def run(self) -> None:
         while True:
             if pygame.event.get(QUIT):
                 break
-            self.screen.fill('#222222')
-            self.draw_map()
-            self.get_short_path()
-            print(self.map)
-            pygame.time.delay(1000)
 
+            path = self.find_short_path()
+            self.draw_map()
+            self.draw_path(path)
             pygame.display.flip()
+
+            pygame.time.delay(3000)
 
         pygame.quit()
 
     def draw_map(self) -> None:
+        self.screen.fill('#222222')
         # Draw cells in the map dependig on their value
         for i, row in enumerate(self.map):
             for j, cell in enumerate(row):
@@ -67,26 +67,42 @@ class Game:
             #  Draw vertical lines
             pygame.draw.line(self.screen, 'white', (i, 0), (i, SCREEN_SIZE), 2)
 
-    def get_short_path(self):
+    def draw_path(self, path: list['Cell']) -> None:
+        for cell in path:
+            pygame.draw.rect(
+                self.screen,
+                cell.color,
+                pygame.Rect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+            )
+
+    def find_short_path(self) -> list['Cell']:
         # BFS algorithm
         to_search: deque[tuple] = deque()
         searched: set[Cell] = set()
         short_path: list[Cell] = []
+
         to_search.append((self.start, []))
+
         while to_search:
             cell, path = to_search.popleft()
+            
+            # Draw the current path
+            self.draw_map()
+            self.draw_path(path)
+            pygame.display.flip()
+            pygame.time.delay(200)
+
             if cell in searched:
                 continue
             if cell == self.target:
-                short_path = path
+                short_path = path[:-1] # to not include the target
                 break
-            to_search.extend((n, path + [n]) for n in self.get_neighboors(cell))
+            to_search.extend((n, path + [n]) for n in self.find_neighboors(cell))
             searched.add(cell)
 
-        for cell in short_path:
-            cell.add_to_map(self.map)
+        return short_path
 
-    def get_neighboors(self, cell: 'Cell') -> list['Cell']:
+    def find_neighboors(self, cell: 'Cell') -> list['Cell']:
         neighboors: list[Cell] = []
         if cell.y > 0 and self.map[cell.y - 1, cell.x] < START: # Top
             neighboors.append(Cell(PATH, PATH_COLOR, cell.x, cell.y - 1))
@@ -99,11 +115,11 @@ class Game:
         return neighboors
 
 class Cell:
-    def __init__(self, value: int, color: str, x: int, y: int, map: np.ndarray = None) -> None:
-        self.value = value
-        self.color = color
-        self.x = x 
-        self.y = y
+    def __init__(self, value: int, color: str, x: int, y: int, map: np.ndarray | None = None) -> None:
+        self.value: int = value
+        self.color: str = color
+        self.x: int = x 
+        self.y: int = y
         if map is not None:
             self.add_to_map(map)
 
