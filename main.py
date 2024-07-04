@@ -12,6 +12,7 @@ TARGET = 1
 START = 2
 PATH = 3
 OBSTACLE = 4
+
 TARGET_COLOR = 'red'
 START_COLOR = 'blue'
 PATH_COLOR = 'green'
@@ -22,8 +23,11 @@ class Game:
         self.screen: pygame.Surface = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
         pygame.display.set_caption('BFS')
         self.map: np.ndarray = np.loadtxt('map.csv', 'uint8', delimiter=',')
-        self.start: Cell = Cell(START, START_COLOR, 1, 1, self.map)
-        self.target: Cell = Cell(TARGET, TARGET_COLOR, 8, 8, self.map)
+
+        indices: tuple = np.where(self.map == START)
+        self.start: Cell = Cell(START, START_COLOR, indices[1][0], indices[0][0], self.map)
+        indices: tuple = np.where(self.map == TARGET)
+        self.target: Cell = Cell(TARGET, TARGET_COLOR, indices[1][0], indices[0][0], self.map)
 
     def run(self) -> None:
         while True:
