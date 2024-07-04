@@ -27,5 +27,11 @@ This project visualizes the Breadth-First Search (BFS) pathfinding algorithm usi
     python main.py
     ```
 
+- You can create your own map by editing values in map.csv file
+  - EMPTY -> 0
+  - TARGET -> 1
+  - START -> 2
+  - OBSTACLE -> 3
+
 ## BFS Algorithm
 Breadth-First Search (BFS) is used to find the shortest path in an unweighted grid. It explores all possible paths level by level from the start cell until it reaches the target cell, ensuring the shortest path is found.
