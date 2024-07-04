@@ -12,7 +12,7 @@ This project visualizes the Breadth-First Search (BFS) pathfinding algorithm usi
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/brkahmed/bfs-pathfinding-visualization.git
+   git clone https://github.com/brkahmed/BFS-Pathfinding-Visualization
    cd bfs-pathfinding-visualization
    ```
 
